@@ -28,6 +28,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         AddUserCommand = new RelayCommand(async _ => await AddUserAsync(), _ => CanRunActions());
         RefreshAppsCommand = new RelayCommand(async _ => await RefreshAppsAsync(), _ => CanRunActions() && SelectedUser is not null);
+        SignOutUserCommand = new RelayCommand(async _ => await SignOutSelectedUserAsync(), _ => CanRunActions() && SelectedUser is not null);
         LaunchAppCommand = new RelayCommand(app => LaunchApp((RemoteAppInfo)app!), _ => true);
     }
 
@@ -36,6 +37,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     public RelayCommand AddUserCommand { get; }
     public RelayCommand RefreshAppsCommand { get; }
+    public RelayCommand SignOutUserCommand { get; }
     public RelayCommand LaunchAppCommand { get; }
 
     public string TenantId
@@ -70,6 +72,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             if (SetField(ref _selectedUser, value))
             {
                 RefreshAppsCommand.RaiseCanExecuteChanged();
+                SignOutUserCommand.RaiseCanExecuteChanged();
             }
         }
     }
@@ -157,6 +160,41 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
+    private async Task SignOutSelectedUserAsync()
+    {
+        if (SelectedUser is null)
+        {
+            return;
+        }
+
+        try
+        {
+            _isBusy = true;
+            RaiseCanExecutes();
+
+            _authService.Configure(TenantId.Trim(), ClientId.Trim());
+
+            var userToSignOut = SelectedUser;
+            await _authService.SignOutAsync(userToSignOut);
+
+            RemoteApps.Clear();
+            Users.Remove(userToSignOut);
+            SelectedUser = Users.Count > 0 ? Users[0] : null;
+
+            StatusMessage = $"Signed out {userToSignOut.DisplayName}. Their local token cache for this app has been removed.";
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Sign out failed: {ex.Message}";
+            MessageBox.Show(StatusMessage, "Sign out error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        finally
+        {
+            _isBusy = false;
+            RaiseCanExecutes();
+        }
+    }
+
     private void LaunchApp(RemoteAppInfo app)
     {
         try
@@ -188,5 +226,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         AddUserCommand.RaiseCanExecuteChanged();
         RefreshAppsCommand.RaiseCanExecuteChanged();
+        SignOutUserCommand.RaiseCanExecuteChanged();
     }
 }

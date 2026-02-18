@@ -7,6 +7,7 @@ This repository contains a WPF desktop application targeting **.NET Framework 4.
 3. Read Azure Virtual Desktop (AVD) app groups/workspaces/apps.
 4. Show remote apps in a grid with a launch button.
 5. Launch Windows App via URI protocol so the local Windows account/session can provide SSO.
+6. Sign out a selected user to remove their token cache from this launcher.
 
 ## Project structure
 

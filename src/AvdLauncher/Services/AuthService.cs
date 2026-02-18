@@ -10,6 +10,8 @@ namespace AvdLauncher.Services;
 public sealed class AuthService
 {
     private IPublicClientApplication? _pca;
+    private string? _tenantId;
+    private string? _clientId;
 
     private static readonly string[] Scopes =
     {
@@ -19,6 +21,11 @@ public sealed class AuthService
 
     public void Configure(string tenantId, string clientId)
     {
+        if (_pca is not null && string.Equals(_tenantId, tenantId, StringComparison.OrdinalIgnoreCase) && string.Equals(_clientId, clientId, StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
         _pca = PublicClientApplicationBuilder
             .Create(clientId)
             .WithAuthority($"https://login.microsoftonline.com/{tenantId}")
@@ -28,6 +35,9 @@ public sealed class AuthService
                 Title = "Sign in to Azure Virtual Desktop Launcher"
             })
             .Build();
+
+        _tenantId = tenantId;
+        _clientId = clientId;
     }
 
     public async Task<UserSession> AddUserInteractiveAsync()
@@ -88,5 +98,15 @@ public sealed class AuthService
             Upn = a.Username,
             MsalAccount = a
         }).ToArray();
+    }
+
+    public async Task SignOutAsync(UserSession session)
+    {
+        if (_pca is null)
+        {
+            throw new InvalidOperationException("AuthService is not configured.");
+        }
+
+        await _pca.RemoveAsync(session.MsalAccount).ConfigureAwait(false);
     }
 }
