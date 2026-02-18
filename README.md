@@ -45,11 +45,6 @@ For AVD data access, user(s) signing in must have Azure RBAC permissions for Des
 
 > If users still see extra prompts, verify account alignment in Windows, app registration authority, conditional access policies, and whether Windows App already has the same account added.
 
-## Sign out behavior
-
-- **Sign out selected user** removes the selected MSAL account from this app cache (`IPublicClientApplication.RemoveAsync`).
-- This signs the user out from this launcher context; Windows global account state or the Windows App account list can still persist outside this app.
-
 ## Notes
 
 - `AvdService` currently reads AVD resources from ARM endpoints in a subscription/resource-group scope and builds an `ms-rd:subscribe` URI for launch subscription.

@@ -46,8 +46,7 @@
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,12">
             <Button Content="Add user (Microsoft login)" Width="210" Margin="0,0,8,0" Command="{Binding AddUserCommand}"/>
             <Button Content="Refresh assigned apps" Width="180" Margin="0,0,8,0" Command="{Binding RefreshAppsCommand}"/>
-            <Button Content="Sign out selected user" Width="170" Margin="0,0,8,0" Command="{Binding SignOutUserCommand}"/>
-            <ComboBox Width="300"
+            <ComboBox Width="380"
                       ItemsSource="{Binding Users}"
                       DisplayMemberPath="DisplayName"
                       SelectedItem="{Binding SelectedUser}"
