@@ -131,7 +131,7 @@ public sealed class AvdService
 
     private static string BuildWindowsAppLaunchUri(string workspaceName)
     {
-        var feedUrl = Uri.EscapeDataString("https://rdweb.wvd.microsoft.com/api/arm/feeddiscovery");
-        return $"ms-rd:subscribe?url={feedUrl}&workspace={Uri.EscapeDataString(workspaceName)}";
+        _ = workspaceName;
+        return "https://learn.microsoft.com/en-us/azure/virtual-desktop/uri-scheme";
     }
 }
