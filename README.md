@@ -45,7 +45,14 @@ For AVD data access, user(s) signing in must have Azure RBAC permissions for Des
 
 > If users still see extra prompts, verify account alignment in Windows, app registration authority, conditional access policies, and whether Windows App already has the same account added.
 
+- Broker/WAM redirect URI note:
+  - If you keep broker enabled, register the broker redirect URI shown by runtime errors (for example `ms-appx-web://microsoft.aad.brokerplugin/<client-id>`) under **Mobile and desktop applications** in your Entra app registration.
+  - If broker redirect is not configured, this app now falls back to non-broker interactive auth so sign-in can continue, but cross-app SSO with Windows App may be reduced.
+
 ## Notes
 
-- `AvdService` currently reads AVD resources from ARM endpoints in a subscription/resource-group scope and builds an `ms-rd:subscribe` URI for launch subscription.
+- `AvdService` reads AVD resources from ARM endpoints in a subscription/resource-group scope and builds real Windows App launch URIs with the `ms-avd:` scheme.
+- Launch URI behavior:
+  - Preferred per-app deep link: `ms-avd:connect?workspaceId=<workspace-arm-id>&resourceId=<app-resource-id>`.
+  - Fallback feed link when IDs are missing: `ms-avd:subscribe?url=https%3A%2F%2Frdweb.wvd.microsoft.com%2Fapi%2Farm%2Ffeeddiscovery`.
 - Depending on your tenant design, you may extend it to fetch per-user assignments more strictly (for example, by checking assignments on application groups).
