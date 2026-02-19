@@ -47,5 +47,8 @@ For AVD data access, user(s) signing in must have Azure RBAC permissions for Des
 
 ## Notes
 
-- `AvdService` currently reads AVD resources from ARM endpoints in a subscription/resource-group scope and builds an `ms-rd:subscribe` URI for launch subscription.
+- `AvdService` reads AVD resources from ARM endpoints in a subscription/resource-group scope and builds real Windows App launch URIs with the `ms-avd:` scheme.
+- Launch URI behavior:
+  - Preferred per-app deep link: `ms-avd:connect?workspaceId=<workspace-arm-id>&resourceId=<app-resource-id>`.
+  - Fallback feed link when IDs are missing: `ms-avd:subscribe?url=https%3A%2F%2Frdweb.wvd.microsoft.com%2Fapi%2Farm%2Ffeeddiscovery`.
 - Depending on your tenant design, you may extend it to fetch per-user assignments more strictly (for example, by checking assignments on application groups).
