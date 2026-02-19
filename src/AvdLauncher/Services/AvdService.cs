@@ -72,9 +72,9 @@ public sealed class AvdService
             var ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             if (item.GetProperty("properties").TryGetProperty("applicationGroupReferences", out var refs))
             {
-                foreach (var id in refs.EnumerateArray())
+                foreach (var applicationGroupReference in refs.EnumerateArray())
                 {
-                    var value = id.GetString();
+                    var value = applicationGroupReference.GetString();
                     if (!string.IsNullOrWhiteSpace(value))
                     {
                         ids.Add(value);

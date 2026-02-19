@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Interop;
 using AvdLauncher.Models;
 using AvdLauncher.Services;
 
@@ -97,8 +98,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             _authService.Configure(TenantId.Trim(), ClientId.Trim());
 
             StatusMessage = "Opening Microsoft sign-in popup...";
-            var user = await _authService.AddUserInteractiveAsync();
-            var token = await _authService.GetAccessTokenAsync(user);
+            var parentWindowHandle = GetParentWindowHandle();
+            var user = await _authService.AddUserInteractiveAsync(parentWindowHandle);
+            var token = await _authService.GetGraphAccessTokenAsync(user, parentWindowHandle);
             var displayName = await _graphService.GetDisplayNameAsync(token);
 
             var enrichedUser = new UserSession
@@ -137,7 +139,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             RaiseCanExecutes();
 
             StatusMessage = "Loading AVD workspace/app-group apps...";
-            var accessToken = await _authService.GetAccessTokenAsync(SelectedUser);
+            var accessToken = await _authService.GetManagementAccessTokenAsync(SelectedUser, GetParentWindowHandle());
             var apps = await _avdService.GetAssignedRemoteAppsAsync(accessToken, SubscriptionId.Trim(), ResourceGroup.Trim());
 
             RemoteApps.Clear();
@@ -208,6 +210,13 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             StatusMessage = $"Launch failed: {ex.Message}";
             MessageBox.Show(StatusMessage, "Launch error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
+    }
+
+
+    private static IntPtr GetParentWindowHandle()
+    {
+        var mainWindow = Application.Current?.MainWindow;
+        return mainWindow is null ? IntPtr.Zero : new WindowInteropHelper(mainWindow).Handle;
     }
 
     private bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
