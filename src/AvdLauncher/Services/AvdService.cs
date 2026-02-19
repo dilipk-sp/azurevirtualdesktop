@@ -97,14 +97,11 @@ public sealed class AvdService
         var list = new List<(string, string, string?, string)>();
         foreach (var item in root.GetProperty("value").EnumerateArray())
         {
-            var armResourceId = item.GetProperty("id").GetString() ?? string.Empty;
+            var resourceId = item.GetProperty("id").GetString() ?? string.Empty;
             var name = item.GetProperty("name").GetString() ?? string.Empty;
             var properties = item.GetProperty("properties");
             var hostPoolArmPath = properties.TryGetProperty("hostPoolArmPath", out var hp) ? hp.GetString() : null;
             var appId = properties.TryGetProperty("appAlias", out var alias) ? alias.GetString() : null;
-            var resourceId = properties.TryGetProperty("objectId", out var objectId)
-                ? objectId.GetString() ?? string.Empty
-                : armResourceId;
             list.Add((name, ExtractName(hostPoolArmPath), appId, resourceId));
         }
 

@@ -214,8 +214,8 @@ public sealed class AuthService
 
     private static bool IsBrokerConfigurationError(MsalClientException ex)
     {
-        return (ex.Message ?? string.Empty).IndexOf("IncorrectConfiguration", StringComparison.OrdinalIgnoreCase) >= 0
-               || (ex.Message ?? string.Empty).IndexOf("ms-appx-web://microsoft.aad.brokerplugin", StringComparison.OrdinalIgnoreCase) >= 0
-               || (ex.ErrorCode ?? string.Empty).IndexOf("wam", StringComparison.OrdinalIgnoreCase) >= 0;
+        return ex.Message.Contains("IncorrectConfiguration", StringComparison.OrdinalIgnoreCase)
+               || ex.Message.Contains("ms-appx-web://microsoft.aad.brokerplugin", StringComparison.OrdinalIgnoreCase)
+               || (ex.ErrorCode ?? string.Empty).Contains("wam", StringComparison.OrdinalIgnoreCase);
     }
 }
